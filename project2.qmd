@@ -1,0 +1,175 @@
+---
+title: "Project 2"
+author: "Grace Fischer"
+date: "10/04/26"
+format: 
+  html:
+    code-overflow: wrap
+---
+
+# Setting Up
+```{r}
+#| label: Set-Up
+#| warning: false
+#| echo: true
+
+## Installing and calling library to prepare for assignment tasks 
+
+install.packages("tidyverse")
+install.packages("tidytuesdayR")
+library(tidyverse)
+library(tidytuesdayR)
+
+```
+
+# Part 1: Fun with Functions 
+## Part 1A: Exponentional Transformation
+```{r}
+#| label: Exponentional Transformation
+#| warning: false 
+#| echo: true 
+
+## Pasting function set up from assignment details
+Exp <- function(x, k) {
+    ## Accounting for the constant term
+    result <- 1 
+    ## Using i to make seq_len from Lecture 8 Notes to make sure we have as i goes to k 
+    for (i in seq_len(k)){
+        result <- result + x^i / factorial(i)
+    }
+    result
+}
+
+## Example output: 
+cat("First example result from Exp(x = 1, k = 1):", Exp(x = 1, k = 1), "\n") ## This is simply, 1 + 1, output should be 2
+
+cat("Second example result from Exp(x = 4, k = 2):", Exp(x = 4, k = 2), "\n") ## Output should be 13
+```
+
+
+## Part 1B: Sample Mean and Standard Deviation
+```{r}
+#| label: Sample Mean and Standard Deviation
+#| warning: false 
+#| echo: true 
+
+sample_mean <- function(x) {
+    ## Set length of the vector x to be N for the sample 
+    N <- length(x)
+    ## Instantiating total variable
+    total <- 0 
+    ## Using seq_along to loop over a vector this time, like in Lecture 8 notes 
+    for (i in seq_along(x)){
+        ## Updating total variable 
+        total <- total + x[i]
+    }
+    total / N
+}
+
+sample_sd <- function(x) {
+ ## Set length of the vector x to be N for the sample
+    N <- length(x)
+    ## Instantiating ss variable
+    ss <- 0 
+    ## Creating xbar varaible with sample_mean function we created 
+    xbar <- sample_mean(x)
+    ## Using seq_along to loop over a vector this time, like in Lecture 8 notes 
+    for (i in seq_along(x)){
+        ## Updating ss variable using first part of formula
+        ss <- ss + (x[i] - xbar)^2
+    }
+    sqrt(ss/ (N - 1))
+}
+
+## Example outputs 
+## I based expected outputs based off hand calculations, so I rounded (hence the tilda's)
+
+x1 <- c(1,2,3,4,5,6,7,8,9,10)
+cat("From x1 <- c(1,2,3,4,5,6,7,8,9,10), we see a sample mean of", sample_mean(x1), "and a sample sd of", sample_sd(x1), "\n")## Expected output: 5.5, Expected output: ~ 3.02 
+
+x2 <- c(2,4,6,8,8,6,4,2)
+cat("From x2 <- c(2,4,6,8,8,6,4,2), we see a sample mean of", sample_mean(x2), "and a sample sd of", sample_sd(x2), "\n")## Expected output: 5, Expected output: ~ 2.4
+
+```
+
+
+## Part 1C: Confidence Intervas
+```{r}
+#| label: Confidence Intervals
+#| warning: false 
+#| echo: true 
+
+## Pasted from assignment directions
+calculate_CI <- function(x, conf = 0.95) {
+    ## Creating variables based on previous parts of the problem, and standard error calculations of mean 
+    N <- length(x)
+    xbar <- sample_mean(x)
+    se <- sample_sd(x) / sqrt(N) 
+
+    alpha <- 1 - conf
+    degrees_freedom <- N - 1
+    t_score <- qt(p = alpha / 2, df = degrees_freedom, lower.tail = FALSE)
+
+    margin <- t_score * se
+    c(lower_bound = xbar - margin, upper_bound = xbar + margin)
+}
+
+## Example outputs
+## Using x1, and x2 from earlier where 
+## x1 <- c(1,2,3,4,5,6,7,8,9,10) 
+## x2 <- c(2,4,6,8,8,6,4,2)
+
+##calculate_CI(x1, conf = 0.95)
+
+cat("Using our function we created to find confidence interval using x1 from ealier and conf = 95, we see",calculate_CI(x1, conf = 0.95), "\n")
+
+## Checking against R function
+dat1 <- data.frame(x = x1)
+fit1 <- lm(x ~ 1, dat1)
+##confint(fit1, level = 0.95)
+
+cat("Using the R function to check out function, we see",confint(fit1, level = 0.95), "\n")
+
+##calculate_CI(x2, conf = 0.98)
+
+cat("Using our function we created to find confidence interval using x2 from ealier and conf = 98, we see", calculate_CI(x2, conf = 0.98), "\n")
+
+## Checking against R function
+dat2 <- data.frame(x = x2)
+fit2 <- lm(x ~ 1, dat2)
+##confint(fit2, level = 0.98)
+
+cat("Using the R function to check out function, we see", confint(fit2, level = 0.98), "\n")
+```
+
+# Part 2: Wrangling Data
+```{r}
+#| label: Downloading Part 2 data
+#| warning: false 
+#| echo: true 
+
+## Copy and pasted from website instructions
+
+tuesdata <- tidytuesdayR::tt_load("2020-01-07")
+rainfall <- tuesdata$rainfall
+temperature <- tuesdata$temperature
+
+```
+
+```{r}
+#| label: Checking for data 
+#| warning: false 
+#| echo: true 
+
+## Copy and pasted from website instructions
+library(here)
+if (!file.exists(here("data", "tuesdata_rainfall.RDS"))) {
+    tuesdata <- tidytuesdayR::tt_load("2020-01-07")
+    rainfall <- tuesdata$rainfall
+    temperature <- tuesdata$temperature
+
+    # save the files to RDS objects
+    saveRDS(tuesdata$rainfall, file = here("data", "tuesdata_rainfall.RDS"))
+    saveRDS(tuesdata$temperature, file = here("data", "tuesdata_temperature.RDS"))
+}
+```
