@@ -143,6 +143,8 @@ cat("Using the R function to check out function, we see", confint(fit2, level = 
 ```
 
 # Part 2: Wrangling Data
+
+## Setting Up Data for Part 2
 ```{r}
 #| label: Downloading Part 2 data
 #| warning: false 
@@ -163,6 +165,12 @@ temperature <- tuesdata$temperature
 
 ## Copy and pasted from website instructions
 library(here)
+
+## Added directory line for additional repo 
+if (!dir.exists(here("data"))) {
+    dir.create(here("data"))
+}
+
 if (!file.exists(here("data", "tuesdata_rainfall.RDS"))) {
     tuesdata <- tidytuesdayR::tt_load("2020-01-07")
     rainfall <- tuesdata$rainfall
@@ -173,3 +181,41 @@ if (!file.exists(here("data", "tuesdata_rainfall.RDS"))) {
     saveRDS(tuesdata$temperature, file = here("data", "tuesdata_temperature.RDS"))
 }
 ```
+
+```{r}
+#| label: Loading In Data 
+#| warning: false 
+#| echo: true 
+
+## Copy and pasted from website instructions 
+
+rainfall <- readRDS(here("data", "tuesdata_rainfall.RDS"))
+temperature <- readRDS(here("data", "tuesdata_temperature.RDS"))
+
+library(tidyverse)
+
+glimpse(rainfall)
+
+glimpse(temperature)
+```
+
+## Task Portion
+```{r}
+#| label: Creating a new data frame
+#| warning: false 
+#| echo: true 
+
+## Check rows in rainfall 
+nrow(rainfall) 
+
+## Dropping NA's from the columnms (source below)
+df <- rainfall %>%
+    drop_na()
+
+## Check rows in our dataframe 
+nrow(df)
+
+```
+
+Sources I used to help me complete this section: 
+https://tidyr.tidyverse.org/reference/drop_na.html
