@@ -10,7 +10,6 @@ In this section, I wrote my own R functions to compute common statistical quanti
 - **`Exp(x, k)`**: approximates eˣ using the first `k` terms of its Taylor series expansion, without using `exp()`.
 - **`sample_mean(x)`** and **`sample_sd(x)`**: calculate the sample mean and sample standard deviation of a numeric vector, without using `mean()` or `sd()`.
 - **`calculate_CI(x, conf)`**: builds a confidence interval for the population mean using the t-distribution, with an adjustable confidence level. Results were checked against R's `confint()`.
-\n
 
 ### Section 2: Wrangling data
 
