@@ -11,14 +11,13 @@ format:
 ```{r}
 #| label: Set-Up
 #| warning: false
+#| eval: false
 #| echo: true
 
 ## Installing and calling library to prepare for assignment tasks 
 
 install.packages("tidyverse")
 install.packages("tidytuesdayR")
-library(tidyverse)
-library(tidytuesdayR)
 
 ```
 
@@ -30,6 +29,9 @@ library(tidytuesdayR)
 #| echo: true 
 
 ## Pasting function set up from assignment details
+library(tidyverse)
+library(tidytuesdayR)
+
 Exp <- function(x, k) {
     ## Accounting for the constant term
     result <- 1 
@@ -308,7 +310,156 @@ https://r-charts.com/color-palettes/
 #| echo: true 
 #| error: true 
 
-## 
+## Creating function
+plot_rainfall <- function(city_name, year) {
+    ## Check inputs so that exactly one city and one year were entered
+    if (length(city_name) != 1L || length(year) != 1L) {
+        stop("Please enter one city and one year at a time.", call. = FALSE)
+    }
 
+    ## Checks input so that a city was entered as text
+    if (!is.character(city_name)) {
+        stop("`city_name` must be text, such as \"PERTH\".", call. = FALSE)
+    }
+
+    ## Checks input so that year was entered as number
+    if (!is.numeric(year)) {
+        stop("`year` must be a number, such as 2000.", call. = FALSE)
+    }
+
+    ## Rename input to not mess with df 
+    city_input <- str_to_upper(city_name)
+    year_input <- year
+
+    ## Check to see that the input exists in the data (sources below)
+    if (!(city_input %in% df$city_name)) {
+        stop("'", city_name, "' is not in the data. Choose from: ",
+             paste(unique(df$city_name), collapse = ", "), call. = FALSE)
+    }
+
+    ## Filtering for one row per rainfall measurement
+    new_df <- df %>%
+        filter(city_name == city_input, year == year_input, temp_type == "max")
+
+    if (nrow(new_df) == 0) {
+        ## Checking the years from rows where the city matches, like boolean conditions 
+        years_available <- unique(df$year[df$city_name == city_input])
+        stop("No data for ", city_input, " in ", year_input, ". Years available: ",
+             min(years_available), " to ", max(years_available),
+             " (some years in between may be missing).", call. = FALSE)
+    }
+
+
+    ## Checking for number of days with no rain 
+    days_no_rain <- sum(new_df$rainfall == 0)
+    ## Checking for rainy days
+    rainy <- new_df %>% filter(rainfall > 0)
+    
+    ## Creating the plot
+    rainy %>%
+        ## Plotting log transformation for better visibility 
+        ggplot(aes(x = log(rainfall))) +
+
+        ## Setting Color for graph aesthetics / Made bins 20 because I got a message to select better bin number then 30 which is preset value 
+        geom_histogram(bins = 20, fill = "deepskyblue2", color = "darkslategrey") +
+        labs(
+            x = "log(Daily Rainfall in mm)",
+            y = "Number of days",
+            title = paste("Distribution of Daily Rainfall in", city_input, "in", year_input),
+            subtitle = paste0(nrow(rainy), " rainy days (median ",
+                              round(median(rainy$rainfall), 1), " mm); ",
+                              days_no_rain, " dry days not shown on the log scale"),
+            caption = "Data: Australian Bureau of Meteorology via TidyTuesday"
+        ) +
+        theme_minimal(base_family = "Georgia")+
+
+    theme(
+        plot.title = element_text(face = "bold", size = 14),
+    )
+}
+
+```
+
+See output in following Cell
+```{r}
+#| label: output example correct 
+#| warning: false 
+#| echo: true 
+
+plot_rainfall("Perth", 2000)
+
+```
+
+```{r}
+#| label: city error 
+#| warning: false 
+#| echo: true 
+#| error: true
+
+## Error where city is not in data (I googled popular cities and chose the first one not included in data)
+plot_rainfall("ADELAIDE", 2000)  
+
+```
+
+```{r}
+#| label: year-errors
+#| warning: false 
+#| echo: true 
+#| error: true
+
+## Error where city exists, but year does not 
+plot_rainfall("CANBERRA", 1850)
+```
+
+```{r}
+#| label: args-error
+#| warning: false 
+#| echo: true 
+#| error: true
+
+## Error where too many inputs
+plot_rainfall("PERTH", c(2000, 2001))
+```
+
+Sources I used to help me complete this:
+https://www.geeksforgeeks.org/r-language/collapse-function-in-r/
+https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/unique
+
+### Function Design Explanation
+I designed `plot_rainfall()` to take two arguments, "city_name" and "year". It has one return (technically) which is histogram of daily rainfall on a log scale for that combination. I decided to use the log scale for the histogram to have better visibility/ scale. The repeated calling allows the user to engage in data exploration, without needed to copy and paste the code.
+
+Following the error-checking approach from class, the function checks the user's inputs in different stages prior to doing any of the actual work or graphing. First, it confirms that exactly one city (as text) and one year (as a number) were entered. It then checks that the city exists in the data. Finally, the last error checking measure is that the city has measurements for the requested year. My minor in computer science from undergrad taught me that a good error message should not just tell users that something went wrong, but also show them what they can do instead, so they do not keep making the same mistake. This has reigned true through all my CS courses, in various programming languages, so I wanted to try to challenge myself and implement that here in R, since that is not something I have done before. Therefore, each stop() message explains how to fix the input, such as listing the valid cities or the range of years available for that city. I also convert the city name to upper case, so "perth" and "Perth" work as well as "PERTH".
+
+Inside the function, I copy the inputs to new names , because when we filter, it would compare the column to itself and keep every row. I also keep only the rows where temp_type == max, since the join in Part 2 matched each rainfall measurement to both a maximum and a minimum temperature, which would otherwise count every day twice.
+
+Finally, when it comes to plotting, I plotted log(rainfall) because the daily rainfall has a very positive skew. The log transformation just makes the shape of the distribution more visible. Because log(0) is undefined, I exclude days with no rain from the histogram and report how many there were in the subtitle of the plot. The title and subtitle are built with paste(), so they update automatically for each city and year. 
+
+
+# Part 4: Apply functions and plot
+## Part 4A: Tasks
+ ```{r}
+#| label: Using Part 1 and Part 2 to make a new df 
+#| warning: false 
+#| echo: true 
+
+## Create new df
+rain_df <- df %>%
+    ## Filter for 2014 and onwards, additionally, make one row per rainfall measure
+    filter(year >= 2014, temp_type == "max") %>%
+
+    ## Create one group per city and year 
+    group_by(city_name, year) %>%
+
+    ## Summarize using the functions we created 
+    summarize(
+        mean_rainfall = sample_mean(rainfall),
+        sd_rainfall   = sample_sd(rainfall),
+        lower_bound   = calculate_CI(rainfall, conf = 0.95)["lower_bound"],
+        upper_bound   = calculate_CI(rainfall, conf = 0.95)["upper_bound"],
+    ) %>%
+    ## Do this to avoid error message 
+    ungroup()
+
+rain_df
 
 ```
