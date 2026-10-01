@@ -205,17 +205,110 @@ glimpse(temperature)
 #| warning: false 
 #| echo: true 
 
-## Check rows in rainfall 
-nrow(rainfall) 
+## Check dim in rainfall 
+dim(rainfall) 
 
-## Dropping NA's from the columnms (source below)
+## Creating data frame 
 df <- rainfall %>%
-    drop_na()
+    ## Dropping NA's from the columnms (source below)
+    drop_na() %>%
 
-## Check rows in our dataframe 
-nrow(df)
+    ## remove = false (source below)
+    unite(col = "date", year:day, sep = "-",
+          remove = FALSE) %>%
+
+    ## ymd from lubricate (source below)
+    mutate(date = ymd(date)) %>%
+    select(-month, -day) %>%
+
+    ## using str fx from assignment hint (Source below)
+    mutate(city_name = str_to_upper(city_name)) %>%
+    inner_join(temperature, by = c("city_name", "date"), relationship = "many-to-many")
+
+## Checking new dimmensions of df to make sure edits were made 
+dim(df) 
 
 ```
 
 Sources I used to help me complete this section: 
 https://tidyr.tidyverse.org/reference/drop_na.html
+https://tidyr.tidyverse.org/reference/unite.html
+https://lubridate.tidyverse.org/reference/ymd.html
+https://stringr.tidyverse.org/reference/case.html
+
+
+
+# Part 3: Data Visualization
+```{r}
+#| label: Install color packages 
+#| warning: false 
+#| echo: true 
+install.packages("paletteer")
+install.packages("ggthemes")
+```
+
+Sources I used to help me complete this: 
+https://r-charts.com/color-palettes/
+
+## Part 3A: Plotting temperature data over time
+```{r}
+#| label: Plotting temperature data over time
+#| warning: false 
+#| echo: true 
+
+## library for unique color values 
+library(paletteer)
+library(ggthemes)
+
+## Editing data frame 
+df %>%
+    filter(year >= 2014) %>%
+    
+    ## Making plot w aes, setting x and y respectively
+    ggplot(aes(x = date, y = temperature, color = temp_type)) +
+    geom_line(alpha = 0.9) +
+    facet_grid(city_name ~ .) +
+
+    ## Scale taken from palentteer package
+    scale_colour_manual(
+
+        ## Hex Codes source below
+        values = paletteer_c("ggthemes::Classic Orange-Blue", 30)[c(8, 23)],
+        ## If I set it normally, I would do it this way: 
+        ## values = c("max" = "orange", "min" = "blue"),
+        labels = c("max" = "Daily max", "min" = "Daily min")
+    ) +
+
+    ## Setting x and y labels, as well as titles and subtitles
+    labs(
+        title = "Daily Maximum and Minimum Temperatures in Australian Cities, 2014–2019",
+        subtitle = "All cities follow a clear summer–winter cycle; Brisbane is warmest on average,\nwhile Canberra has the widest gap between highs and lows",
+        x = "Date",
+        y = "Temperature (in Degrees Celsius)",
+        color = "Temperature"
+    ) +
+    theme_bw(base_family = "Times") +
+
+    ## Source below
+    theme(
+        plot.title = element_text(face = "bold", size = 14),
+        legend.position = "bottom"
+    )
+
+```
+
+Sources I used to help me complete this section: 
+https://ggplot2.tidyverse.org/reference/theme.html
+https://r-charts.com/color-palettes/
+
+## Part 3B: Plotting rainfall over time
+```{r}
+#| label: Plotting rainfall over time
+#| warning: false 
+#| echo: true 
+#| error: true 
+
+## 
+
+
+```
