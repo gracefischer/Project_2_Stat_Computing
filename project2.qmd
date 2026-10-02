@@ -84,7 +84,7 @@ sample_sd <- function(x) {
 }
 
 ## Example outputs 
-## I based expected outputs based off hand calculations, so I rounded (hence the tilda's)
+## I based expected outputs based off hand calculations, so I rounded (hence the tildes)
 
 x1 <- c(1,2,3,4,5,6,7,8,9,10)
 cat("From x1 <- c(1,2,3,4,5,6,7,8,9,10), we see a sample mean of", sample_mean(x1), "and a sample sd of", sample_sd(x1), "\n")## Expected output: 5.5, Expected output: ~ 3.02 
@@ -95,7 +95,7 @@ cat("From x2 <- c(2,4,6,8,8,6,4,2), we see a sample mean of", sample_mean(x2), "
 ```
 
 
-## Part 1C: Confidence Intervas
+## Part 1C: Confidence Intervals
 ```{r}
 #| label: Confidence Intervals
 #| warning: false 
@@ -123,7 +123,7 @@ calculate_CI <- function(x, conf = 0.95) {
 
 ##calculate_CI(x1, conf = 0.95)
 
-cat("Using our function we created to find confidence interval using x1 from ealier and conf = 95, we see",calculate_CI(x1, conf = 0.95), "\n")
+cat("Using our function we created to find confidence interval using x1 from earlier and conf = .95, we see",calculate_CI(x1, conf = 0.95), "\n")
 
 ## Checking against R function
 dat1 <- data.frame(x = x1)
@@ -134,7 +134,7 @@ cat("Using the R function to check out function, we see",confint(fit1, level = 0
 
 ##calculate_CI(x2, conf = 0.98)
 
-cat("Using our function we created to find confidence interval using x2 from ealier and conf = 98, we see", calculate_CI(x2, conf = 0.98), "\n")
+cat("Using our function we created to find confidence interval using x2 from ealier and conf = .98, we see", calculate_CI(x2, conf = 0.98), "\n")
 
 ## Checking against R function
 dat2 <- data.frame(x = x2)
@@ -219,7 +219,7 @@ df <- rainfall %>%
     unite(col = "date", year:day, sep = "-",
           remove = FALSE) %>%
 
-    ## ymd from lubricate (source below)
+    ## ymd from lubridate (source below)
     mutate(date = ymd(date)) %>%
     select(-month, -day) %>%
 
@@ -244,6 +244,7 @@ https://stringr.tidyverse.org/reference/case.html
 ```{r}
 #| label: Install color packages 
 #| warning: false 
+#| eval: false
 #| echo: true 
 install.packages("paletteer")
 install.packages("ggthemes")
@@ -271,7 +272,7 @@ df %>%
     geom_line(alpha = 0.9) +
     facet_grid(city_name ~ .) +
 
-    ## Scale taken from palentteer package
+    ## Scale taken from paletteer package
     scale_colour_manual(
 
         ## Hex Codes source below
@@ -283,11 +284,12 @@ df %>%
 
     ## Setting x and y labels, as well as titles and subtitles
     labs(
-        title = "Daily Maximum and Minimum Temperatures in Australian Cities, 2014–2019",
-        subtitle = "All cities follow a clear summer–winter cycle; Brisbane is warmest on average,\nwhile Canberra has the widest gap between highs and lows",
         x = "Date",
         y = "Temperature (in Degrees Celsius)",
-        color = "Temperature"
+        color = "Temperature",
+        title = "Daily Maximum and Minimum Temperatures in Australian Cities, 2014–2019",
+        subtitle = "All cities follow a clear summer–winter cycle; Brisbane is warmest on average,\nwhile Canberra has the widest gap between highs and lows",
+        caption = "Data: Australian Bureau of Meteorology"
     ) +
     theme_bw(base_family = "Times") +
 
@@ -308,7 +310,6 @@ https://r-charts.com/color-palettes/
 #| label: Plotting rainfall over time
 #| warning: false 
 #| echo: true 
-#| error: true 
 
 ## Creating function
 plot_rainfall <- function(city_name, year) {
@@ -369,12 +370,12 @@ plot_rainfall <- function(city_name, year) {
             subtitle = paste0(nrow(rainy), " rainy days (median ",
                               round(median(rainy$rainfall), 1), " mm); ",
                               days_no_rain, " dry days not shown on the log scale"),
-            caption = "Data: Australian Bureau of Meteorology via TidyTuesday"
+            caption = "Data: Australian Bureau of Meteorology"
         ) +
         theme_minimal(base_family = "Georgia")+
 
     theme(
-        plot.title = element_text(face = "bold", size = 14),
+        plot.title = element_text(face = "bold", size = 14)
     )
 }
 
@@ -426,9 +427,9 @@ https://www.geeksforgeeks.org/r-language/collapse-function-in-r/
 https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/unique
 
 ### Function Design Explanation
-I designed `plot_rainfall()` to take two arguments, "city_name" and "year". It has one return (technically) which is histogram of daily rainfall on a log scale for that combination. I decided to use the log scale for the histogram to have better visibility/ scale. The repeated calling allows the user to engage in data exploration, without needed to copy and paste the code.
+I designed `plot_rainfall()` to take two arguments, "city_name" and "year". It has one return which is histogram of daily rainfall on a log scale for that combination. I decided to use the log scale for the histogram to have better visibility/ scale. The repeated calling allows the user to engage in data exploration, without needing to copy and paste the code.
 
-Following the error-checking approach from class, the function checks the user's inputs in different stages prior to doing any of the actual work or graphing. First, it confirms that exactly one city (as text) and one year (as a number) were entered. It then checks that the city exists in the data. Finally, the last error checking measure is that the city has measurements for the requested year. My minor in computer science from undergrad taught me that a good error message should not just tell users that something went wrong, but also show them what they can do instead, so they do not keep making the same mistake. This has reigned true through all my CS courses, in various programming languages, so I wanted to try to challenge myself and implement that here in R, since that is not something I have done before. Therefore, each stop() message explains how to fix the input, such as listing the valid cities or the range of years available for that city. I also convert the city name to upper case, so "perth" and "Perth" work as well as "PERTH".
+Following the error-checking approach from class, the function checks the user's inputs in different stages prior to doing any of the actual work or graphing. First, it confirms that exactly one city (as text) and one year (as a number) were entered. It then checks that the city exists in the data. Finally, the last error checking measure is that the city has measurements for the requested year. My minor in computer science from undergrad taught me that a good error message should not just tell users that something went wrong, but also show them what they can do instead, so they do not keep making the same mistake. This has remained true through all my CS courses, in various programming languages, so I wanted to try to challenge myself and implement that here in R, since that is not something I have done before. Therefore, each stop() message explains how to fix the input, such as listing the valid cities or the range of years available for that city. I also convert the city name to upper case, so "perth" and "Perth" work as well as "PERTH".
 
 Inside the function, I copy the inputs to new names , because when we filter, it would compare the column to itself and keep every row. I also keep only the rows where temp_type == max, since the join in Part 2 matched each rainfall measurement to both a maximum and a minimum temperature, which would otherwise count every day twice.
 
@@ -437,7 +438,7 @@ Finally, when it comes to plotting, I plotted log(rainfall) because the daily ra
 
 # Part 4: Apply functions and plot
 ## Part 4A: Tasks
- ```{r}
+```{r}
 #| label: Using Part 1 and Part 2 to make a new df 
 #| warning: false 
 #| echo: true 
@@ -457,9 +458,54 @@ rain_df <- df %>%
         lower_bound   = calculate_CI(rainfall, conf = 0.95)["lower_bound"],
         upper_bound   = calculate_CI(rainfall, conf = 0.95)["upper_bound"],
     ) %>%
-    ## Do this to avoid error message 
+    ## Do this to avoid error later 
     ungroup()
 
 rain_df
 
 ```
+
+## Part 4B: Tasks
+```{r}
+#| label: Plot using rain_df 
+#| warning: false 
+#| echo: true 
+
+## Use ggplot and new df to make graph
+rain_df %>%
+
+    ## Using aes, setting x and y respectively 
+    ggplot(aes(x = year, y = mean_rainfall)) +
+
+    ## Error bars for the 95% confidence interval, sources below 
+    geom_errorbar(aes(ymin = lower_bound, ymax = upper_bound),
+                  width = 0.2, color = "darkblue") +
+    ## Line and points for the means
+    geom_line(color = "darkblue") +
+    geom_point(color = "darkblue", size = 2) +
+    ## Source below
+    facet_wrap(~ city_name, nrow = 1) +
+    ## ggplot2 function which controls numeric x axis (inspired by Lecture 6 notes, source below)
+    scale_x_continuous(breaks = 2014:2019) +
+    labs(
+        title = "Mean Daily Rainfall in Australian Cities, 2014–2019",
+        subtitle = "Perth has the highest mean rainfall per recorded day but the widest intervals, implying there are fewer measurements.\nCanberra is consistently the lowest.\n2019 covers January to May only.",
+        caption = "Data: Australian Bureau of Meteorology",
+        x = "Year",
+        y = "Mean daily rainfall (mm)"
+    ) +
+    theme_clean(base_family = "Times") +
+
+    theme(
+        plot.title = element_text(face = "bold", size = 14,
+        axis.text.x = element_text(angle = 45, hjust = 1))
+    )
+    
+
+```
+
+Sources that helped me complete this (from instructions included):
+https://r-graphics.org/RECIPE-ANNOTATE-ERROR-BAR.html
+https://ggplot2.tidyverse.org/reference/geom_linerange.html
+https://ggplot2.tidyverse.org/reference/facet_wrap.html
+https://ggplot2.tidyverse.org/reference/scale_continuous.html
