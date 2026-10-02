@@ -497,9 +497,10 @@ rain_df %>%
     theme_clean(base_family = "Times") +
 
     theme(
-        plot.title = element_text(face = "bold", size = 14,
-        axis.text.x = element_text(angle = 45, hjust = 1))
+        plot.title = element_text(face = "bold", size = 14),
+        axis.text.x = element_text(angle = 45, hjust = 1)
     )
+    
     
 
 ```
