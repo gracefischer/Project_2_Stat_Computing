@@ -13,6 +13,22 @@ In this section, I wrote my own R functions to compute common statistical quanti
 
 ### Section 2: Wrangling data
 
+In this section, I cleaned and combined two TidyTuesday datasets on Australian rainfall and temperature into one data frame, `df`.
+
+- **Cleaning**: dropped rows with missing values and combined the `year`, `month` and `day` columns into a single `date` column.
+- **Standardizing**: converted city names to upper case so they matched across both datasets.
+- **Joining**: merged the rainfall and temperature data by city and date, keeping only observations found in both.
+
 ### Section 3: Data visualization
 
+In this section, I used `ggplot2` to explore the wrangled data.
+
+- **Temperature over time**: a line plot of daily maximum and minimum temperatures from 2014 onwards, faceted by city.
+- **`plot_rainfall(city_name, year)`**: a reusable function that returns a histogram of daily rainfall on a log scale for any city and year. It checks its inputs and gives a helpful error message when a city or year is not in the data.
+
 ### Section 4: Apply functions and plot
+
+In this section, I applied my functions from Section 1 to the rainfall data.
+
+- **`rain_df`**: the sample mean, standard deviation, and 95% confidence interval of daily rainfall for each city and year from 2014 onwards.
+- **Confidence interval plot**: the yearly means with error bars for the confidence intervals, faceted by city.
