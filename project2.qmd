@@ -233,9 +233,13 @@ dim(df)
 ```
 
 Sources I used to help me complete this section: 
+
 https://tidyr.tidyverse.org/reference/drop_na.html
+
 https://tidyr.tidyverse.org/reference/unite.html
+
 https://lubridate.tidyverse.org/reference/ymd.html
+
 https://stringr.tidyverse.org/reference/case.html
 
 
@@ -251,6 +255,7 @@ install.packages("ggthemes")
 ```
 
 Sources I used to help me complete this: 
+
 https://r-charts.com/color-palettes/
 
 ## Part 3A: Plotting temperature data over time
@@ -302,7 +307,9 @@ df %>%
 ```
 
 Sources I used to help me complete this section: 
+
 https://ggplot2.tidyverse.org/reference/theme.html
+
 https://r-charts.com/color-palettes/
 
 ## Part 3B: Plotting rainfall over time
@@ -423,7 +430,9 @@ plot_rainfall("PERTH", c(2000, 2001))
 ```
 
 Sources I used to help me complete this:
+
 https://www.geeksforgeeks.org/r-language/collapse-function-in-r/
+
 https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/unique
 
 ### Function Design Explanation
@@ -506,7 +515,11 @@ rain_df %>%
 ```
 
 Sources that helped me complete this (from instructions included):
+
 https://r-graphics.org/RECIPE-ANNOTATE-ERROR-BAR.html
+
 https://ggplot2.tidyverse.org/reference/geom_linerange.html
+
 https://ggplot2.tidyverse.org/reference/facet_wrap.html
-https://ggplot2.tidyverse.org/reference/scale_continuous.html
+
+https://ggplot2.tidyverse.org/reference/scale_continuous.html 
